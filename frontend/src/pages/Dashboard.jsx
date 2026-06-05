@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/tasks", { headers });
+      const res = await axios.get("https://task-manager-backend-h48y.onrender.com/api/tasks", { headers });
       setTasks(res.data);
     } catch {
       toast.error("Failed to load tasks");
@@ -38,7 +38,7 @@ export default function Dashboard() {
     if (editTask) {
       await updateTask();
     } else {
-      await axios.post("http://localhost:5000/api/tasks", form, { headers });
+      await axios.post("https://task-manager-backend-h48y.onrender.com/api/tasks", form, { headers });
       toast.success("Task added!");
       setForm({ title: "", description: "" });
       setCurrentPage(1);
@@ -48,7 +48,7 @@ export default function Dashboard() {
 
   const updateTask = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/tasks/${editTask._id}`, form, { headers });
+      await axios.put(`https://task-manager-backend-h48y.onrender.com/api/tasks/${editTask._id}`, form, { headers });
       toast.success("Task updated!");
       setForm({ title: "", description: "" });
       setEditTask(null);
@@ -70,13 +70,13 @@ export default function Dashboard() {
   };
 
   const deleteTask = async (id) => {
-    await axios.delete(`http://localhost:5000/api/tasks/${id}`, { headers });
+    await axios.delete(`https://task-manager-backend-h48y.onrender.com/api/tasks/${id}`, { headers });
     toast.success("Task deleted!");
     fetchTasks();
   };
 
   const toggleTask = async (id) => {
-    await axios.patch(`http://localhost:5000/api/tasks/${id}/toggle`, {}, { headers });
+    await axios.patch(`https://task-manager-backend-h48y.onrender.com/api/tasks/${id}/toggle`, {}, { headers });
     fetchTasks();
   };
 
@@ -87,7 +87,7 @@ export default function Dashboard() {
 
   const deleteAccount = async () => {
     try {
-      await axios.delete("http://localhost:5000/api/auth/delete", { headers });
+      await axios.delete("https://task-manager-backend-h48y.onrender.com/api/auth/delete", { headers });
       toast.success("Account deleted!");
       localStorage.clear();
       navigate("/");

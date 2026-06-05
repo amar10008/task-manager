@@ -24,7 +24,7 @@ export default function Register() {
 
     try {
       const name = `${form.firstName} ${form.lastName}`;
-      await axios.post('http://localhost:5000/api/auth/register', {
+      await axios.post('https://task-manager-backend-h48y.onrender.com/api/auth/register', {
         name,
         email: form.email,
         password: form.password

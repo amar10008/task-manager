@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ export default function Dashboard() {
   const tasksPerPage = 5;
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const headers = { Authorization: `Bearer ${token}` };
+  const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -28,11 +28,19 @@ export default function Dashboard() {
     } catch {
       toast.error("Failed to load tasks");
     }
-  }, [token]);
+  }, [headers]);
 
   useEffect(() => {
-    if (!token) navigate("/");
-    else fetchTasks();
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    const loadTasks = async () => {
+      await fetchTasks();
+    };
+
+    loadTasks();
   }, [token, navigate, fetchTasks]);
 
   const addTask = async () => {

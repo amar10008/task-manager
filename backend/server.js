@@ -17,9 +17,8 @@ mongoose.connect(process.env.MONGO_URI)
   })
   .catch(err => console.log(err));
 
-  app.get('/', (req, res) => {
+ app.get('/health', (req, res) => {
   res.status(200).json({
-    status: 'OK',
-    message: 'Task Manager API is running'
+    status: 'healthy'
   });
 });

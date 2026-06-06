@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { HiOutlineUserCircle } from "react-icons/hi2";
+import { HiOutlineUserCircle, HiOutlineInboxStack } from "react-icons/hi2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -15,6 +15,8 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [loadingTask, setLoadingTask] = useState(false);
+  const [loadingFetch, setLoadingFetch] = useState(false);
   const { dark, setDark } = useTheme();
   const tasksPerPage = 5;
   const navigate = useNavigate();
@@ -22,11 +24,14 @@ export default function Dashboard() {
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
   const fetchTasks = useCallback(async () => {
+    setLoadingFetch(true);
     try {
       const res = await axios.get("https://task-manager-backend-h48y.onrender.com/api/tasks", { headers });
       setTasks(res.data);
     } catch {
       toast.error("Failed to load tasks");
+    } finally {
+      setLoadingFetch(false);
     }
   }, [headers]);
 
@@ -45,14 +50,21 @@ export default function Dashboard() {
 
   const addTask = async () => {
     if (!form.title) return toast.error("Title is required!");
-    if (editTask) {
-      await updateTask();
-    } else {
-      await axios.post("https://task-manager-backend-h48y.onrender.com/api/tasks", form, { headers });
-      toast.success("Task added!");
-      setForm({ title: "", description: "" });
-      setCurrentPage(1);
-      fetchTasks();
+    setLoadingTask(true);
+    try {
+      if (editTask) {
+        await updateTask();
+      } else {
+        await axios.post("https://task-manager-backend-h48y.onrender.com/api/tasks", form, { headers });
+        toast.success("Task added!");
+        setForm({ title: "", description: "" });
+        setCurrentPage(1);
+        fetchTasks();
+      }
+    } catch {
+      toast.error("Failed to add task!");
+    } finally {
+      setLoadingTask(false);
     }
   };
 
@@ -65,6 +77,8 @@ export default function Dashboard() {
       fetchTasks();
     } catch {
       toast.error("Failed to update task!");
+    } finally {
+      setLoadingTask(false);
     }
   };
 
@@ -161,92 +175,62 @@ export default function Dashboard() {
 
         {/* Navbar */}
         <div className="navbar" style={{ background: cardBg, borderBottom: `1px solid ${borderColor}` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div className="navbar-logo">
             <img
               src="/logo.png"
               alt="Task Manager Logo"
-              style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+              style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }}
             />
-            <h1 style={{ fontSize: "20px", fontWeight: "700", color: "#1e3a8a", margin: 0 }}>
+            <h1 style={{ fontSize: "22px", fontWeight: "700", color: "#1e3a8a", margin: 0 }}>
               Task Manager
             </h1>
           </div>
-          <div
-  className="navbar-actions"
-  style={{ display: "flex", alignItems: "center", gap: "12px" }}
->
 
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={() => setDark(!dark)}
-              style={{
-                background: 'transparent',
-                border: `1px solid ${borderColor}`,
-                padding: '6px 12px',
-                fontSize: '13px',
-                color: dark ? '#e2e8f0' : '#555',
-              }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-  {dark ? (
-    <>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1" x2="12" y2="3"/>
-        <line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/>
-        <line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-      Light
-    </>
-  ) : (
-    <>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-      Dark
-    </>
-  )}
-</span>
-            </button>
+          <div className="navbar-actions">
+            <div className="navbar-profile">
+              <div className="user-info">
+                <HiOutlineUserCircle size={32} color="#2563eb" />
+                <span style={{ fontSize: "14px", color: dark ? '#e2e8f0' : '#555', fontWeight: "600" }}>
+                  {localStorage.getItem("name")}
+                </span>
+              </div>
 
-            <div
-  className="user-info"
-  style={{ display: "flex", alignItems: "center", gap: "6px" }}
->
-              <HiOutlineUserCircle size={28} color="#2563eb" />
-              <span style={{ fontSize: "14px", color: dark ? '#e2e8f0' : '#555', fontWeight: "600" }}>
-                {localStorage.getItem("name")}
-              </span>
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={() => setDark(!dark)}
+                className="theme-toggle"
+                aria-label="Toggle dark mode"
+                title={dark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {dark ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                )}
+                <span className="theme-label">{dark ? "Light" : "Dark"}</span>
+              </button>
             </div>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              style={{
-                background: "transparent",
-                color: "#dc2626",
-                border: "1px solid #dc2626",
-                padding: "6px 14px",
-                fontSize: "13px",
-              }}
-            >
-              Delete Account
-            </button>
-            <button
-              onClick={logout}
-              style={{
-                background: "transparent",
-                color: "#dc2626",
-                border: "1px solid #dc2626",
-                padding: "6px 14px",
-                fontSize: "13px",
-              }}
-            >
-              Logout
-            </button>
+
+            <div className="navbar-buttons">
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="btn btn-sm btn-secondary"
+                title="Delete your account"
+              >
+                Delete
+              </button>
+              <button
+                onClick={logout}
+                className="btn btn-sm btn-primary"
+                title="Logout from your account"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
 
@@ -286,17 +270,19 @@ export default function Dashboard() {
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
             <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
-              <button onClick={addTask}>
-                {editTask ? "Update Task" : "Add Task"}
+              <button 
+                onClick={addTask}
+                disabled={loadingTask}
+                style={{ opacity: loadingTask ? 0.6 : 1 }}
+              >
+                {loadingTask ? (editTask ? "Updating..." : "Adding...") : (editTask ? "Update Task" : "Add Task")}
               </button>
               {editTask && (
                 <button
                   onClick={handleCancelEdit}
-                  style={{
-                    background: "transparent",
-                    color: "#6b7280",
-                    border: "1px solid #6b7280",
-                  }}
+                  disabled={loadingTask}
+                  className="btn btn-secondary"
+                  style={{ opacity: loadingTask ? 0.6 : 1 }}
                 >
                   Cancel
                 </button>
@@ -305,12 +291,11 @@ export default function Dashboard() {
           </div>
 
           {/* Search & Filter */}
-          <div style={{ display: "flex", gap: "12px", marginBottom: "16px", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, position: "relative", minWidth: "200px" }}>
+          <div className="search-filter-row">
+            <div className="search-box">
               <svg
-                style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
                 width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
               >
                 <circle cx="11" cy="11" r="8"/>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -322,22 +307,14 @@ export default function Dashboard() {
                   setSearch(e.target.value);
                   setCurrentPage(1);
                 }}
-                style={{ paddingLeft: "38px", margin: 0 }}
               />
             </div>
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div className="filter-group">
               {["all", "pending", "completed"].map(f => (
                 <button
                   key={f}
+                  className={f === filter ? "btn btn-primary" : "btn btn-secondary"}
                   onClick={() => { setFilter(f); setCurrentPage(1); }}
-                  style={{
-                    background: filter === f ? "#2563eb" : cardBg,
-                    color: filter === f ? "#fff" : dark ? '#e2e8f0' : '#555',
-                    border: `1px solid ${filter === f ? '#2563eb' : borderColor}`,
-                    padding: "8px 16px",
-                    fontSize: "13px",
-                    fontWeight: filter === f ? "600" : "400",
-                  }}
                 >
                   {f === "all" ? "All" : f === "pending" ? "Pending" : "Completed"}
                 </button>
@@ -352,16 +329,21 @@ export default function Dashboard() {
 
           {/* No Tasks */}
           {filteredTasks.length === 0 && (
-            <div style={{
-              background: cardBg,
-              border: `1px solid ${borderColor}`,
-              borderRadius: "8px",
-              padding: "40px",
-              textAlign: "center",
-              color: subText,
-              fontSize: "14px",
-            }}>
-              {search ? "No tasks found for your search." : "No tasks yet. Add one above."}
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <HiOutlineInboxStack size={48} />
+              </div>
+              <h3 style={{ margin: "16px 0 8px", fontSize: "18px", fontWeight: "600", color: textColor }}>
+                {search ? "No tasks found" : "No tasks yet"}
+              </h3>
+              <p style={{ margin: "0 0 24px", fontSize: "14px", color: subText }}>
+                {search ? "Try adjusting your search filters" : "Add your first task to get started"}
+              </p>
+              {!search && (
+                <button className="btn btn-primary" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                  Add your first task
+                </button>
+              )}
             </div>
           )}
 
@@ -433,24 +415,11 @@ export default function Dashboard() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "8px",
-              marginTop: "24px",
-              marginBottom: "32px"
-            }}>
+            <div className="pagination">
               <button
                 onClick={() => setCurrentPage(p => p - 1)}
                 disabled={currentPage === 1}
-                style={{
-                  background: currentPage === 1 ? "#e5e7eb" : "#2563eb",
-                  color: currentPage === 1 ? "#aaa" : "#fff",
-                  padding: "8px 16px",
-                  fontSize: "13px",
-                  cursor: currentPage === 1 ? "not-allowed" : "pointer"
-                }}
+                className="btn btn-secondary"
               >
                 Previous
               </button>
@@ -458,14 +427,7 @@ export default function Dashboard() {
                 <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  style={{
-                    background: currentPage === i + 1 ? "#2563eb" : cardBg,
-                    color: currentPage === i + 1 ? "#fff" : dark ? '#e2e8f0' : '#333',
-                    border: `1px solid ${borderColor}`,
-                    padding: "8px 14px",
-                    fontSize: "13px",
-                    fontWeight: currentPage === i + 1 ? "600" : "400"
-                  }}
+                  className={currentPage === i + 1 ? "btn btn-primary" : "btn btn-secondary"}
                 >
                   {i + 1}
                 </button>
@@ -473,13 +435,7 @@ export default function Dashboard() {
               <button
                 onClick={() => setCurrentPage(p => p + 1)}
                 disabled={currentPage === totalPages}
-                style={{
-                  background: currentPage === totalPages ? "#e5e7eb" : "#2563eb",
-                  color: currentPage === totalPages ? "#aaa" : "#fff",
-                  padding: "8px 16px",
-                  fontSize: "13px",
-                  cursor: currentPage === totalPages ? "not-allowed" : "pointer"
-                }}
+                className="btn btn-secondary"
               >
                 Next
               </button>

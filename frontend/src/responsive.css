@@ -1,12 +1,12 @@
 .navbar {
   background: var(--card);
   border-bottom: 1px solid var(--border);
-  padding: 16px 32px;
+  padding: 14px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  gap: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
   transition: all 0.3s ease;
 }
 
@@ -19,13 +19,13 @@
 
 .navbar-logo h1 {
   white-space: nowrap;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
 }
 
 .navbar-actions {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   align-items: center;
   flex: 1;
   justify-content: flex-end;
@@ -33,13 +33,15 @@
 
 .navbar-profile {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .navbar-buttons {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -48,20 +50,21 @@
   align-items: center;
   gap: 8px;
   white-space: nowrap;
-  padding: 8px 12px;
-  background: rgba(37, 99, 235, 0.05);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  padding: 8px 10px;
+  background: rgba(37, 99, 235, 0.08);
+  border-radius: 999px;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .user-info:hover {
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(37, 99, 235, 0.14);
+  transform: translateY(-1px);
 }
 
 .theme-toggle {
   background: var(--toggle-bg);
   border: 1px solid var(--toggle-border);
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
   display: inline-flex;
@@ -69,8 +72,8 @@
   gap: 8px;
   color: var(--text);
   transition: background 0.25s ease, border-color 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease, color 0.2s ease;
-  min-height: 44px;
-  font-size: 13px;
+  min-height: 38px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   box-shadow: var(--toggle-shadow);
@@ -81,11 +84,11 @@
 }
 
 button.theme-toggle:hover {
-  border-color: var(--toggle-border);
+  border-color: var(--primary);
   color: var(--primary);
-  background: var(--toggle-bg);
+  background: var(--toggle-hover);
   transform: translateY(-1px);
-  box-shadow: var(--toggle-shadow);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
 }
 
 .theme-toggle:hover svg {
@@ -292,20 +295,65 @@ button.theme-toggle:hover {
   background: var(--danger);
 }
 
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.form-actions button {
+  flex: 1;
+  min-width: 140px;
+}
+
+.empty-state {
+  max-width: 520px;
+  margin: 0 auto 24px;
+  padding: 32px 26px;
+  border: 1px dashed var(--border);
+  border-radius: 20px;
+  background: var(--card);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+}
+
+.empty-state h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.empty-state p {
+  margin-bottom: 22px;
+  color: var(--subtext);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 @media (max-width: 600px) {
   .navbar {
-    padding: 14px 16px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-    border-bottom: 2px solid var(--border);
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
   }
 
   .navbar-logo {
-    width: 100%;
+    width: auto;
     gap: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
   }
 
   .navbar-logo h1 {
@@ -313,18 +361,19 @@ button.theme-toggle:hover {
   }
 
   .navbar-actions {
-    width: 100%;
-    gap: 0;
-    justify-content: space-between;
-    align-items: stretch;
-    flex-direction: column;
+    width: auto;
+    gap: 10px;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .navbar-profile {
     width: 100%;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
     gap: 10px;
-    padding: 10px 0;
+    padding: 8px 0;
     border-bottom: 1px solid var(--border);
   }
 
@@ -339,11 +388,13 @@ button.theme-toggle:hover {
   }
 
   .theme-toggle {
-    width: 100%;
+    order: -1;
+    width: auto;
     justify-content: center;
-    padding: 11px 14px;
-    min-height: 44px;
+    padding: 10px 12px;
+    min-height: 42px;
     font-size: 12px;
+    margin-left: auto;
   }
 
   .theme-label {

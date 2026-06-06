@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [loadingTask, setLoadingTask] = useState(false);
+  const [activeDeleteTaskId, setActiveDeleteTaskId] = useState(null);
+  const [loadingDeleteAccount, setLoadingDeleteAccount] = useState(false);
   const [loadingFetch, setLoadingFetch] = useState(false);
   const { dark, setDark } = useTheme();
   const tasksPerPage = 5;
@@ -94,14 +96,25 @@ export default function Dashboard() {
   };
 
   const deleteTask = async (id) => {
-    await axios.delete(`https://task-manager-backend-h48y.onrender.com/api/tasks/${id}`, { headers });
-    toast.success("Task deleted!");
-    fetchTasks();
+    setActiveDeleteTaskId(id);
+    try {
+      await axios.delete(`https://task-manager-backend-h48y.onrender.com/api/tasks/${id}`, { headers });
+      toast.success("Task deleted!");
+      fetchTasks();
+    } catch {
+      toast.error("Failed to delete task!");
+    } finally {
+      setActiveDeleteTaskId(null);
+    }
   };
 
   const toggleTask = async (id) => {
-    await axios.patch(`https://task-manager-backend-h48y.onrender.com/api/tasks/${id}/toggle`, {}, { headers });
-    fetchTasks();
+    try {
+      await axios.patch(`https://task-manager-backend-h48y.onrender.com/api/tasks/${id}/toggle`, {}, { headers });
+      fetchTasks();
+    } catch {
+      toast.error("Failed to update task status!");
+    }
   };
 
   const logout = () => {
@@ -110,6 +123,7 @@ export default function Dashboard() {
   };
 
   const deleteAccount = async () => {
+    setLoadingDeleteAccount(true);
     try {
       await axios.delete("https://task-manager-backend-h48y.onrender.com/api/auth/delete", { headers });
       toast.success("Account deleted!");
@@ -117,6 +131,8 @@ export default function Dashboard() {
       navigate("/");
     } catch {
       toast.error("Something went wrong!");
+    } finally {
+      setLoadingDeleteAccount(false);
     }
   };
 
@@ -159,12 +175,13 @@ export default function Dashboard() {
               </button>
               <button
                 className="delete-btn"
+                disabled={loadingDeleteAccount}
                 onClick={() => {
                   setShowDeleteModal(false);
                   deleteAccount();
                 }}
               >
-                Delete
+                {loadingDeleteAccount ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
@@ -194,26 +211,26 @@ export default function Dashboard() {
                   {localStorage.getItem("name")}
                 </span>
               </div>
-
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={() => setDark(!dark)}
-                className="theme-toggle"
-                aria-label="Toggle dark mode"
-                title={dark ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                {dark ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                )}
-                <span className="theme-label">{dark ? "Light" : "Dark"}</span>
-              </button>
             </div>
+
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={() => setDark(!dark)}
+              className="theme-toggle"
+              aria-label="Toggle dark mode"
+              title={dark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {dark ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              )}
+              <span className="theme-label">{dark ? "Light" : "Dark"}</span>
+            </button>
 
             <div className="navbar-buttons">
               <button
@@ -269,20 +286,19 @@ export default function Dashboard() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
-            <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
-              <button 
+            <div className="form-actions">
+              <button
+                className="btn btn-primary"
                 onClick={addTask}
                 disabled={loadingTask}
-                style={{ opacity: loadingTask ? 0.6 : 1 }}
               >
                 {loadingTask ? (editTask ? "Updating..." : "Adding...") : (editTask ? "Update Task" : "Add Task")}
               </button>
               {editTask && (
                 <button
+                  className="btn btn-secondary btn-sm"
                   onClick={handleCancelEdit}
                   disabled={loadingTask}
-                  className="btn btn-secondary"
-                  style={{ opacity: loadingTask ? 0.6 : 1 }}
                 >
                   Cancel
                 </button>
@@ -388,26 +404,25 @@ export default function Dashboard() {
 
               <div className="task-buttons">
                 <button
+                  className="btn btn-sm btn-success"
+                  disabled={loadingTask || activeDeleteTaskId === task._id}
                   onClick={() => toggleTask(task._id)}
-                  style={{
-                    background: task.status === "pending" ? "#16a34a" : "#d97706",
-                    padding: "7px 14px",
-                    fontSize: "12px",
-                  }}
                 >
                   {task.status === "pending" ? "Complete" : "Undo"}
                 </button>
                 <button
+                  className="btn btn-sm btn-primary"
+                  disabled={loadingTask || activeDeleteTaskId === task._id}
                   onClick={() => handleEdit(task)}
-                  style={{ background: "#2563eb", padding: "7px 14px", fontSize: "12px" }}
                 >
                   Edit
                 </button>
                 <button
+                  className="btn btn-sm btn-danger"
+                  disabled={activeDeleteTaskId === task._id}
                   onClick={() => deleteTask(task._id)}
-                  style={{ background: "#dc2626", padding: "7px 14px", fontSize: "12px" }}
                 >
-                  Delete
+                  {activeDeleteTaskId === task._id ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

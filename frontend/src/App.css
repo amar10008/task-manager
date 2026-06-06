@@ -8,6 +8,12 @@ body {
   font-family: 'Inter', sans-serif;
   background: #eef2f7;
   color: #1a1a2e;
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
 input {
@@ -21,13 +27,23 @@ input {
   outline: none;
   background: #f8fafc;
   color: #1a1a2e;
-  transition: border 0.2s, box-shadow 0.2s;
+  transition: border 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+body.dark input {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
 }
 
 input:focus {
   border-color: #3b82f6;
   background: #fff;
   box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+body.dark input:focus {
+  background: #1e293b;
 }
 
 button {
@@ -67,4 +83,8 @@ label {
   color: #374151;
   margin-top: 10px;
   display: block;
+}
+
+body.dark label {
+  color: #94a3b8;
 }

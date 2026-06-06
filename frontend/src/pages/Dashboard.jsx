@@ -153,17 +153,20 @@ export default function Dashboard() {
 
         {/* Navbar */}
         <div className="navbar" style={{ background: cardBg, borderBottom: `1px solid ${borderColor}` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <img
               src="/logo.png"
               alt="Task Manager Logo"
-              style={{ width: "25px", height: "25px", borderRadius: "50%", objectFit: "cover" }}
+              style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
             />
             <h1 style={{ fontSize: "20px", fontWeight: "700", color: "#1e3a8a", margin: 0 }}>
               Task Manager
             </h1>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div
+  className="navbar-actions"
+  style={{ display: "flex", alignItems: "center", gap: "12px" }}
+>
 
             {/* Dark Mode Toggle */}
             <button
@@ -203,7 +206,10 @@ export default function Dashboard() {
 </span>
             </button>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div
+  className="user-info"
+  style={{ display: "flex", alignItems: "center", gap: "6px" }}
+>
               <HiOutlineUserCircle size={28} color="#2563eb" />
               <span style={{ fontSize: "14px", color: dark ? '#e2e8f0' : '#555', fontWeight: "600" }}>
                 {localStorage.getItem("name")}

@@ -9,8 +9,17 @@ A full-stack Task Management Web Application built using the MERN stack (MongoDB
 - Search tasks by title
 - Filter tasks by status (All, Pending, Completed)
 - Pagination for task list
+- Dark Mode
 - Delete Account
 - Responsive UI
+
+
+## Live Demo
+
+- **Frontend:** https://task-manager-five-orcin-75.vercel.app/
+- **Backend API:** https://task-manager-backend-h48y.onrender.com
+- **GitHub:** https://github.com/amar10008/task-manager
+
 
 ## Tech Stack
 **Frontend:** React.js, Axios, React Router DOM, React Hot Toast
@@ -63,10 +72,10 @@ PORT=5000
 ![Login](screenshots/login.png)
 
 ### Register Page
-![Register](screenshots/register.png)
+![Register](screenshots/Register.png)
 
 ### Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](screenshots/Dashboard.png)
 
 ## API Endpoints
 | Method | Endpoint | Description |

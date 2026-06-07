@@ -13,37 +13,15 @@ A full-stack Task Management Web Application built using the MERN stack (MongoDB
 - Delete Account
 - Responsive UI
 
-
 ## Live Demo
-
 - **Frontend:** https://task-manager-five-orcin-75.vercel.app/
 - **Backend API:** https://task-manager-backend-h48y.onrender.com
 - **GitHub:** https://github.com/amar10008/task-manager
 
-
 ## Tech Stack
-**Frontend:** React.js, Axios, React Router DOM, React Hot Toast
+**Frontend:** React.js (Vite), Axios, React Router DOM, React Hot Toast
 
-**Backend:** Node.js, Express.js, MongoDB Atlas, JWT, bcryptjs
-
-# Task Manager - MERN Stack App
-
-A full-stack Task Management Web Application built using the MERN stack (MongoDB, Express.js, React.js, Node.js).
-
-## Features
-- User Registration & Login with JWT Authentication
-- Create, Read, Update, Delete Tasks
-- Mark tasks as Completed or Pending
-- Search tasks by title
-- Filter tasks by status (All, Pending, Completed)
-- Pagination for task list
-- Delete Account
-- Responsive UI
-
-## Tech Stack
-**Frontend:** React.js, Axios, React Router DOM, React Hot Toast
-
-**Backend:** Node.js, Express.js, MongoDB Atlas, JWT, bcryptjs
+**Backend:** Node.js, Express.js, MongoDB Atlas (Mongoose), JWT, bcryptjs
 
 ## Setup Instructions
 
@@ -90,4 +68,5 @@ PORT=5000
 | PATCH | /api/tasks/:id/toggle | Toggle status |
 
 ## Developer
-**Amar Praharaj** — MCA Student
+**Amar Praharaj** — MCA Student  
+NIIS Institute of Engineering & Technology, Bhubaneswar

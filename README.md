@@ -72,10 +72,10 @@ PORT=5000
 ![Login](screenshots/login.png)
 
 ### Register Page
-![Register](screenshots/Register.png)
+![Register](screenshots/register.png)
 
 ### Dashboard
-![Dashboard](screenshots/Dashboard.png)
+![Dashboard](screenshots/dashboard.png)
 
 ## API Endpoints
 | Method | Endpoint | Description |
